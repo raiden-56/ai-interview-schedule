@@ -1,0 +1,60 @@
+import dotenv from "dotenv";
+dotenv.config();
+
+export const config = {
+  port: parseInt(process.env.PORT || "5000", 10),
+  nodeEnv: process.env.NODE_ENV || "development",
+
+  database: {
+    url: process.env.DATABASE_URL || "",
+  },
+
+  redis: {
+    url: process.env.REDIS_URL || "redis://localhost:6379",
+  },
+
+  jwt: {
+    accessSecret: process.env.JWT_ACCESS_SECRET || "access-secret-change-me",
+    refreshSecret: process.env.JWT_REFRESH_SECRET || "refresh-secret-change-me",
+    accessExpiresIn: "15m",
+    refreshExpiresIn: "7d",
+  },
+
+  cors: {
+    origins: (
+      process.env.CORS_ORIGIN || "http://localhost:5174,http://localhost:3000"
+    )
+      .split(",")
+      .map((o) => o.trim()),
+  },
+
+  email: {
+    host: process.env.SMTP_HOST || "smtp.gmail.com",
+    port: parseInt(process.env.SMTP_PORT || "587", 10),
+    user: process.env.SMTP_USER || "",
+    pass: process.env.SMTP_PASS || "",
+    from: process.env.SMTP_FROM || "noreply@interviewai.com",
+  },
+
+  openai: {
+    apiKey: process.env.OPENAI_API_KEY || "",
+    model: process.env.OPENAI_MODEL || "gpt-4",
+  },
+
+  aws: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
+    region: process.env.AWS_REGION || "us-east-1",
+    s3Bucket: process.env.AWS_S3_BUCKET || "",
+  },
+
+  judge0: {
+    apiUrl: process.env.JUDGE0_API_URL || "https://judge0-ce.p.rapidapi.com",
+    apiKey: process.env.JUDGE0_API_KEY || "",
+  },
+
+  rateLimit: {
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100,
+  },
+} as const;

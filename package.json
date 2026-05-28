@@ -1,0 +1,17 @@
+{
+  "name": "interview-module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --kill-others-on-fail --names \"DB,API,UI\" --prefix-colors \"blue,green,cyan\" \"npm run dev:db\" \"npm run dev:api\" \"npm run dev:ui\"",
+    "dev:db": "cd backend && npx prisma dev",
+    "dev:api": "wait-on tcp:51214 && cd backend && npm run dev",
+    "dev:ui": "wait-on tcp:5000 && cd frontend && npm run dev",
+    "build": "npm run build --prefix backend && npm run build --prefix frontend",
+    "install:all": "npm install --prefix backend && npm install --prefix frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "wait-on": "^9.0.10"
+  }
+}

@@ -1,0 +1,247 @@
+// AI Interview Platform - Prisma Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  RECRUITER
+  CANDIDATE
+}
+
+enum InterviewStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum PlanType {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+enum CheatingEventType {
+  TAB_SWITCH
+  COPY_PASTE
+  MULTIPLE_FACES
+  EYE_MOVEMENT
+  BROWSER_BLUR
+  KEYBOARD_INACTIVITY
+  FULLSCREEN_EXIT
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  firstName     String
+  lastName      String
+  role          Role      @default(CANDIDATE)
+  avatar        String?
+  phone         String?
+  isVerified    Boolean   @default(false)
+  isActive      Boolean   @default(true)
+  refreshToken  String?
+  lastLoginAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  company       Company?  @relation("CompanyOwner")
+  companyMember CompanyMember?
+  candidateInterviews Interview[] @relation("CandidateInterviews")
+  recruiterInterviews Interview[] @relation("RecruiterInterviews")
+  resumes       Resume[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Company {
+  id          String      @id @default(uuid())
+  name        String
+  logo        String?
+  website     String?
+  description String?
+  plan        PlanType    @default(FREE)
+  ownerId     String      @unique
+  owner       User        @relation("CompanyOwner", fields: [ownerId], references: [id])
+  members     CompanyMember[]
+  interviews  Interview[]
+  jobPostings JobPosting[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("companies")
+}
+
+model CompanyMember {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  role      String   @default("member")
+  createdAt DateTime @default(now())
+
+  @@map("company_members")
+}
+
+model JobPosting {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  skills      String[]
+  experience  String?
+  location    String?
+  salary      String?
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  interviews  Interview[]
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("job_postings")
+}
+
+model Interview {
+  id            String          @id @default(uuid())
+  title         String
+  description   String?
+  candidateId   String
+  candidate     User            @relation("CandidateInterviews", fields: [candidateId], references: [id])
+  recruiterId   String
+  recruiter     User            @relation("RecruiterInterviews", fields: [recruiterId], references: [id])
+  companyId     String
+  company       Company         @relation(fields: [companyId], references: [id])
+  jobPostingId  String?
+  jobPosting    JobPosting?     @relation(fields: [jobPostingId], references: [id])
+  status        InterviewStatus @default(SCHEDULED)
+  scheduledAt   DateTime
+  startedAt     DateTime?
+  endedAt       DateTime?
+  meetingId     String          @unique @default(uuid())
+  duration      Int             @default(60)
+  recordingUrl  String?
+  feedback      String?
+  rating        Int?
+
+  codingSessions CodingSession[]
+  aiReports      AIReport[]
+  cheatingLogs   CheatingLog[]
+  chatMessages   ChatMessage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("interviews")
+}
+
+model CodingSession {
+  id          String    @id @default(uuid())
+  interviewId String
+  interview   Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  language    String
+  code        String    @default("")
+  output      String?
+  testCases   Json?
+  testResults Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("coding_sessions")
+}
+
+model AIReport {
+  id                  String    @id @default(uuid())
+  interviewId         String
+  interview           Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  technicalScore      Float?
+  communicationScore  Float?
+  confidenceScore     Float?
+  problemSolvingScore Float?
+  codeQualityScore    Float?
+  overallScore        Float?
+  summary             String?
+  strengths           String[]
+  weaknesses          String[]
+  recommendations     String[]
+  hiringRecommendation String?
+  sentimentAnalysis   Json?
+  speechAnalysis      Json?
+  codeAnalysis        Json?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@map("ai_reports")
+}
+
+model CheatingLog {
+  id          String            @id @default(uuid())
+  interviewId String
+  interview   Interview         @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  eventType   CheatingEventType
+  severity    Severity          @default(LOW)
+  details     String?
+  screenshot  String?
+  timestamp   DateTime          @default(now())
+
+  @@map("cheating_logs")
+}
+
+model Resume {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fileName    String
+  fileUrl     String
+  parsedData  Json?
+  skills      String[]
+  experience  Json?
+  education   Json?
+  atsScore    Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("resumes")
+}
+
+model ChatMessage {
+  id          String    @id @default(uuid())
+  interviewId String
+  interview   Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  senderId    String
+  message     String
+  type        String    @default("text")
+  createdAt   DateTime  @default(now())
+
+  @@map("chat_messages")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String
+  isRead    Boolean  @default(false)
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
