@@ -146,7 +146,7 @@ export default function DashboardLayout() {
             {user?.lastName?.[0]}
           </Avatar>
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography variant="body2" fontWeight={600} noWrap>
+            <Typography variant="body2" noWrap sx={{ fontWeight: 600 }}>
               {user?.firstName} {user?.lastName}
             </Typography>
             <Typography variant="caption" color="text.secondary" noWrap>

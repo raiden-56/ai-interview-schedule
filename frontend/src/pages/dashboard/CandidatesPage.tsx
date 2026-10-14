@@ -143,7 +143,7 @@ export default function CandidatesPage() {
   return (
     <Box>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight={700}>
+        <Typography variant="h4" sx={{ fontWeight: 700 }}>
           Candidates
         </Typography>
         <Typography color="text.secondary" sx={{ mt: 0.5 }}>
@@ -160,10 +160,12 @@ export default function CandidatesPage() {
           <CardContent>
             <Stack
               direction={{ xs: "column", sm: "row" }}
-              justifyContent="space-between"
-              alignItems={{ xs: "stretch", sm: "center" }}
               spacing={2}
-              mb={3}
+              sx={{
+                justifyContent: "space-between",
+                alignItems: { xs: "stretch", sm: "center" },
+                mb: 3,
+              }}
             >
               <TextField
                 placeholder="Search by name or email..."
@@ -171,12 +173,14 @@ export default function CandidatesPage() {
                 onChange={(e) => setSearch(e.target.value)}
                 size="small"
                 sx={{ maxWidth: 320 }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search />
-                    </InputAdornment>
-                  ),
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Search />
+                      </InputAdornment>
+                    ),
+                  },
                 }}
               />
               <Tooltip title="Refresh">
@@ -218,7 +222,7 @@ export default function CandidatesPage() {
                       {filtered.length === 0 ? (
                         <TableRow>
                           <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
-                            <Stack alignItems="center" spacing={1}>
+                            <Stack spacing={1} sx={{ alignItems: "center" }}>
                               <PersonAdd
                                 sx={{ fontSize: 48, color: "text.disabled" }}
                               />
@@ -234,8 +238,8 @@ export default function CandidatesPage() {
                             <TableCell>
                               <Stack
                                 direction="row"
-                                alignItems="center"
                                 spacing={1.5}
+                                sx={{ alignItems: "center" }}
                               >
                                 <Avatar
                                   src={candidate.avatar || undefined}
@@ -250,7 +254,10 @@ export default function CandidatesPage() {
                                   {candidate.lastName[0]}
                                 </Avatar>
                                 <Box>
-                                  <Typography variant="body2" fontWeight={600}>
+                                  <Typography
+                                    variant="body2"
+                                    sx={{ fontWeight: 600 }}
+                                  >
                                     {candidate.firstName} {candidate.lastName}
                                   </Typography>
                                 </Box>
@@ -259,8 +266,8 @@ export default function CandidatesPage() {
                             <TableCell>
                               <Stack
                                 direction="row"
-                                alignItems="center"
                                 spacing={0.5}
+                                sx={{ alignItems: "center" }}
                               >
                                 <Email
                                   sx={{ fontSize: 14, color: "text.secondary" }}
@@ -357,7 +364,7 @@ export default function CandidatesPage() {
               onChange={(e) => setScheduledAt(e.target.value)}
               fullWidth
               required
-              InputLabelProps={{ shrink: true }}
+              slotProps={{ inputLabel: { shrink: true } }}
             />
             <TextField
               label="Duration (minutes)"
@@ -365,7 +372,7 @@ export default function CandidatesPage() {
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
               fullWidth
-              inputProps={{ min: 15, max: 180, step: 15 }}
+              slotProps={{ htmlInput: { min: 15, max: 180, step: 15 } }}
             />
           </Stack>
         </DialogContent>

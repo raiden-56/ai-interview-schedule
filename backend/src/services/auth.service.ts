@@ -64,6 +64,24 @@ export class AuthService {
       },
     });
 
+    // Auto-create company for recruiters
+    if (user.role === "RECRUITER") {
+      const company = await prisma.company.create({
+        data: {
+          name: `${user.firstName}'s Company`,
+          ownerId: user.id,
+        },
+      });
+
+      await prisma.companyMember.create({
+        data: {
+          userId: user.id,
+          companyId: company.id,
+          role: "owner",
+        },
+      });
+    }
+
     const accessToken = this.generateAccessToken({
       id: user.id,
       email: user.email,

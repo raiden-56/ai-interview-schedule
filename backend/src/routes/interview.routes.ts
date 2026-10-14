@@ -24,10 +24,18 @@ router.get(
 );
 router.get("/meeting/:meetingId", InterviewController.getByMeetingId);
 router.get("/:id", InterviewController.getById);
-router.patch(
-  "/:id/status",
+// Role-specific rules (candidates may only start/submit their own interview)
+// are enforced in InterviewService.updateStatus.
+router.patch("/:id/status", InterviewController.updateStatus);
+router.post(
+  "/:id/proctoring/events",
+  authorize("CANDIDATE"),
+  InterviewController.reportProctoringEvent,
+);
+router.get(
+  "/:id/proctoring",
   authorize("RECRUITER", "ADMIN"),
-  InterviewController.updateStatus,
+  InterviewController.getProctoringReport,
 );
 
 export default router;

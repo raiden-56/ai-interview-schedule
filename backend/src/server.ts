@@ -7,6 +7,7 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import { createServer } from "http";
 import { config } from "./config";
+import { corsOrigin } from "./config/cors";
 import logger from "./config/logger";
 import routes from "./routes";
 import { errorHandler, notFound } from "./middleware/errorHandler";
@@ -22,7 +23,7 @@ const io = initializeSocket(httpServer);
 app.use(helmet());
 app.use(
   cors({
-    origin: config.cors.origins,
+    origin: corsOrigin,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],

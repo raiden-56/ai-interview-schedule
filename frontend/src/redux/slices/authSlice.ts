@@ -8,6 +8,8 @@ interface User {
   lastName: string;
   role: "ADMIN" | "RECRUITER" | "CANDIDATE";
   avatar?: string;
+  company?: { id: string; name: string };
+  companyMember?: { companyId: string; company: { id: string; name: string } };
 }
 
 interface AuthState {

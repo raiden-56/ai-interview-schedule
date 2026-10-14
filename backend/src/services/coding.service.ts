@@ -7,10 +7,10 @@ export class CodingService {
     });
   }
 
-  static async updateCode(sessionId: string, code: string) {
+  static async updateCode(sessionId: string, code: string, language?: string) {
     return prisma.codingSession.update({
       where: { id: sessionId },
-      data: { code },
+      data: language ? { code, language } : { code },
     });
   }
 

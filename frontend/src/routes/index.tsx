@@ -101,14 +101,6 @@ export const router = createBrowserRouter([
             ),
           },
           {
-            path: "practice",
-            element: (
-              <SuspenseWrapper>
-                <InterviewRoom />
-              </SuspenseWrapper>
-            ),
-          },
-          {
             path: "settings",
             element: (
               <SuspenseWrapper>
@@ -128,13 +120,27 @@ export const router = createBrowserRouter([
       },
     ],
   },
+  // Full-screen rooms: authenticated, but outside the dashboard chrome.
   {
-    path: "/interview/:meetingId",
-    element: (
-      <SuspenseWrapper>
-        <InterviewRoom />
-      </SuspenseWrapper>
-    ),
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "/interview/:meetingId",
+        element: (
+          <SuspenseWrapper>
+            <InterviewRoom />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: "/dashboard/practice",
+        element: (
+          <SuspenseWrapper>
+            <InterviewRoom />
+          </SuspenseWrapper>
+        ),
+      },
+    ],
   },
   {
     path: "*",

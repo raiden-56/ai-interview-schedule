@@ -35,6 +35,11 @@ enum CheatingEventType {
   BROWSER_BLUR
   KEYBOARD_INACTIVITY
   FULLSCREEN_EXIT
+  NO_FACE
+  CAMERA_OFF
+  DEVTOOLS_OPEN
+  MULTIPLE_SCREENS
+  EXTERNAL_PASTE
 }
 
 enum Severity {
@@ -197,9 +202,11 @@ model CheatingLog {
   eventType   CheatingEventType
   severity    Severity          @default(LOW)
   details     String?
+  metadata    Json?
   screenshot  String?
   timestamp   DateTime          @default(now())
 
+  @@index([interviewId, timestamp])
   @@map("cheating_logs")
 }
 

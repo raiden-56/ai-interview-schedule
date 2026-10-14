@@ -90,13 +90,13 @@ export default function ProfilePage() {
     setProfileLoading(true);
     setProfileMsg(null);
     try {
-      const data = await userAPI.updateProfile({
+      const res = await userAPI.updateProfile({
         firstName,
         lastName,
         phone,
         avatar,
       });
-      dispatch(updateUser(data.data));
+      dispatch(updateUser(res.data.data));
       setProfileMsg({ type: "success", text: "Profile updated successfully!" });
     } catch (err: any) {
       setProfileMsg({
@@ -151,7 +151,7 @@ export default function ProfilePage() {
   return (
     <Box>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight={700}>
+        <Typography variant="h4" sx={{ fontWeight: 700 }}>
           My Profile
         </Typography>
         <Typography color="text.secondary" sx={{ mt: 0.5 }}>
@@ -161,7 +161,7 @@ export default function ProfilePage() {
 
       <Grid container spacing={3}>
         {/* Left — Avatar card */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -212,7 +212,7 @@ export default function ProfilePage() {
                     onChange={handleAvatarChange}
                   />
                 </Box>
-                <Typography variant="h6" fontWeight={700}>
+                <Typography variant="h6" sx={{ fontWeight: 700 }}>
                   {firstName} {lastName}
                 </Typography>
                 <Typography
@@ -249,7 +249,7 @@ export default function ProfilePage() {
         </Grid>
 
         {/* Right — Forms */}
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Stack spacing={3}>
             {/* Profile info */}
             <motion.div
@@ -259,9 +259,13 @@ export default function ProfilePage() {
             >
               <Card>
                 <CardContent sx={{ p: 3 }}>
-                  <Stack direction="row" alignItems="center" spacing={1} mb={3}>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{ alignItems: "center", mb: 3 }}
+                  >
                     <Person sx={{ color: "primary.main" }} />
-                    <Typography variant="h6" fontWeight={600}>
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
                       Personal Information
                     </Typography>
                   </Stack>
@@ -273,7 +277,7 @@ export default function ProfilePage() {
                   )}
 
                   <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                       <TextField
                         label="First Name"
                         value={firstName}
@@ -282,7 +286,7 @@ export default function ProfilePage() {
                         required
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                       <TextField
                         label="Last Name"
                         value={lastName}
@@ -291,7 +295,7 @@ export default function ProfilePage() {
                         required
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                       <TextField
                         label="Email"
                         value={user?.email || ""}
@@ -300,7 +304,7 @@ export default function ProfilePage() {
                         helperText="Email cannot be changed"
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                       <TextField
                         label="Phone"
                         value={phone}
@@ -341,9 +345,13 @@ export default function ProfilePage() {
             >
               <Card>
                 <CardContent sx={{ p: 3 }}>
-                  <Stack direction="row" alignItems="center" spacing={1} mb={3}>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{ alignItems: "center", mb: 3 }}
+                  >
                     <Lock sx={{ color: "primary.main" }} />
-                    <Typography variant="h6" fontWeight={600}>
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
                       Change Password
                     </Typography>
                   </Stack>
@@ -363,15 +371,17 @@ export default function ProfilePage() {
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       fullWidth
-                      InputProps={{
-                        endAdornment: (
-                          <IconButton
-                            onClick={() => setShowCurrent((v) => !v)}
-                            edge="end"
-                          >
-                            {showCurrent ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        ),
+                      slotProps={{
+                        input: {
+                          endAdornment: (
+                            <IconButton
+                              onClick={() => setShowCurrent((v) => !v)}
+                              edge="end"
+                            >
+                              {showCurrent ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          ),
+                        },
                       }}
                     />
                     <TextField
@@ -381,15 +391,17 @@ export default function ProfilePage() {
                       onChange={(e) => setNewPassword(e.target.value)}
                       fullWidth
                       helperText="At least 8 characters"
-                      InputProps={{
-                        endAdornment: (
-                          <IconButton
-                            onClick={() => setShowNew((v) => !v)}
-                            edge="end"
-                          >
-                            {showNew ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        ),
+                      slotProps={{
+                        input: {
+                          endAdornment: (
+                            <IconButton
+                              onClick={() => setShowNew((v) => !v)}
+                              edge="end"
+                            >
+                              {showNew ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          ),
+                        },
                       }}
                     />
                     <TextField
@@ -398,15 +410,17 @@ export default function ProfilePage() {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       fullWidth
-                      InputProps={{
-                        endAdornment: (
-                          <IconButton
-                            onClick={() => setShowConfirm((v) => !v)}
-                            edge="end"
-                          >
-                            {showConfirm ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        ),
+                      slotProps={{
+                        input: {
+                          endAdornment: (
+                            <IconButton
+                              onClick={() => setShowConfirm((v) => !v)}
+                              edge="end"
+                            >
+                              {showConfirm ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          ),
+                        },
                       }}
                     />
                   </Stack>

@@ -76,15 +76,36 @@ A production-grade SaaS platform for conducting live coding interviews, video as
 - ✅ AI hiring recommendations
 - ✅ AI resume-job matching (ATS score)
 
-### Anti-Cheating
+### Anti-Cheating (Proctoring)
 
-- ✅ Tab switch detection
-- ✅ Copy/paste detection
-- ✅ Webcam monitoring & face detection
-- ✅ Eye movement tracking
-- ✅ Browser focus detection
-- ✅ Keyboard inactivity detection
-- ✅ Fullscreen enforcement
+Candidates see a consent screen listing what is monitored and must start in
+fullscreen with a working camera. Detection runs in the browser
+(`frontend/src/hooks/useAntiCheating.ts`); every event is sent to
+`POST /api/v1/interviews/:id/proctoring/events`, where the **server** assigns
+severity (repeat offences escalate), stores it in `cheating_logs`, and pushes
+it live to the interviewer only (candidates never receive alerts).
+
+| Signal | How it is detected |
+| --- | --- |
+| Tab switch | `visibilitychange` |
+| Other app / second monitor focused | window `blur` while the tab stays visible |
+| External paste | paste/drop whose text wasn't copied inside the interview (preview stored) |
+| Auto-typer / injected code | large single edit in the editor without a paste event |
+| Copy out of the page | `copy`/`cut` events |
+| Fullscreen exit | `fullscreenchange` (blocking overlay until re-entered) |
+| DevTools attempt | F12 / Ctrl+Shift+I/J/C / Ctrl+U (blocked) |
+| Multiple displays | `screen.isExtended` (Chromium) |
+| No face / multiple faces / looking away | MediaPipe face detector on the webcam (lazy-loaded) |
+| Camera off or covered | track disabled/ended, or near-black frames |
+| Inactivity | no keyboard/mouse input for 3 minutes |
+
+Recruiters get an **integrity score** (100 minus weighted penalties) and risk
+level in the interview room's *Proctoring* tab and from the shield icon on the
+Interviews page. The proctoring summary is also fed into the AI report.
+
+> MediaPipe's WASM and model are loaded from `cdn.jsdelivr.net` and
+> `storage.googleapis.com`. If those are blocked, face checks fall back to
+> camera-off/covered detection only.
 
 ### Analytics
 

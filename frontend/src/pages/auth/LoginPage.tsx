@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { useNavigate, Link as RouterLink, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -31,6 +31,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isLoading, error } = useAppSelector((state) => state.auth);
 
   const {
@@ -45,7 +46,10 @@ export default function LoginPage() {
     dispatch(clearError());
     const result = await dispatch(login(data));
     if (login.fulfilled.match(result)) {
-      navigate("/dashboard");
+      // Return to the page that required login (e.g. an interview link).
+      const from = (location.state as { from?: { pathname?: string } } | null)
+        ?.from?.pathname;
+      navigate(from || "/dashboard", { replace: true });
     }
   };
 
@@ -64,7 +68,7 @@ export default function LoginPage() {
         <CardContent sx={{ p: 4 }}>
           <Box sx={{ textAlign: "center", mb: 4 }}>
             <Code sx={{ fontSize: 48, color: "primary.main", mb: 1 }} />
-            <Typography variant="h4" fontWeight={700}>
+            <Typography variant="h4" sx={{ fontWeight: 700 }}>
               Welcome Back
             </Typography>
             <Typography color="text.secondary" sx={{ mt: 1 }}>
@@ -95,17 +99,19 @@ export default function LoginPage() {
               {...register("password")}
               error={!!errors.password}
               helperText={errors.password?.message}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
               }}
               sx={{ mb: 1 }}
             />
@@ -130,9 +136,13 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <Typography textAlign="center" color="text.secondary">
+          <Typography color="text.secondary" sx={{ textAlign: "center" }}>
             Don't have an account?{" "}
-            <Link component={RouterLink} to="/register" fontWeight={600}>
+            <Link
+              component={RouterLink}
+              to="/register"
+              sx={{ fontWeight: 600 }}
+            >
               Sign Up
             </Link>
           </Typography>

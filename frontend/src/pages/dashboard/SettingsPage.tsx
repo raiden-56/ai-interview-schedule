@@ -49,7 +49,7 @@ export default function SettingsPage() {
   return (
     <Box>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight={700}>
+        <Typography variant="h4" sx={{ fontWeight: 700 }}>
           Settings
         </Typography>
         <Typography color="text.secondary" sx={{ mt: 0.5 }}>
@@ -57,14 +57,18 @@ export default function SettingsPage() {
         </Typography>
       </Box>
 
-      <Stack spacing={3} maxWidth={720}>
+      <Stack spacing={3} sx={{ maxWidth: 720 }}>
         {/* Appearance */}
         <motion.div {...cardProps} transition={{ delay: 0 }}>
           <Card>
             <CardContent sx={{ p: 3 }}>
-              <Stack direction="row" alignItems="center" spacing={1} mb={2}>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ alignItems: "center", mb: 2 }}
+              >
                 <Palette sx={{ color: "primary.main" }} />
-                <Typography variant="h6" fontWeight={600}>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   Appearance
                 </Typography>
               </Stack>
@@ -96,9 +100,13 @@ export default function SettingsPage() {
         <motion.div {...cardProps} transition={{ delay: 0.1 }}>
           <Card>
             <CardContent sx={{ p: 3 }}>
-              <Stack direction="row" alignItems="center" spacing={1} mb={2}>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ alignItems: "center", mb: 2 }}
+              >
                 <Notifications sx={{ color: "primary.main" }} />
-                <Typography variant="h6" fontWeight={600}>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   Notifications
                 </Typography>
               </Stack>
@@ -167,30 +175,36 @@ export default function SettingsPage() {
         <motion.div {...cardProps} transition={{ delay: 0.2 }}>
           <Card>
             <CardContent sx={{ p: 3 }}>
-              <Stack direction="row" alignItems="center" spacing={1} mb={2}>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ alignItems: "center", mb: 2 }}
+              >
                 <Info sx={{ color: "primary.main" }} />
-                <Typography variant="h6" fontWeight={600}>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   Account
                 </Typography>
               </Stack>
               <Divider sx={{ mb: 2 }} />
               <Stack spacing={1.5}>
-                <Stack direction="row" justifyContent="space-between">
+                <Stack direction="row" sx={{ justifyContent: "space-between" }}>
                   <Typography color="text.secondary">Email</Typography>
-                  <Typography fontWeight={500}>{user?.email}</Typography>
+                  <Typography sx={{ fontWeight: 500 }}>
+                    {user?.email}
+                  </Typography>
                 </Stack>
-                <Stack direction="row" justifyContent="space-between">
+                <Stack direction="row" sx={{ justifyContent: "space-between" }}>
                   <Typography color="text.secondary">Role</Typography>
                   <Chip label={user?.role} size="small" color="primary" />
                 </Stack>
-                <Stack direction="row" justifyContent="space-between">
+                <Stack direction="row" sx={{ justifyContent: "space-between" }}>
                   <Typography color="text.secondary">Name</Typography>
-                  <Typography fontWeight={500}>
+                  <Typography sx={{ fontWeight: 500 }}>
                     {user?.firstName} {user?.lastName}
                   </Typography>
                 </Stack>
               </Stack>
-              <Box mt={2}>
+              <Box sx={{ mt: 2 }}>
                 <Button
                   variant="outlined"
                   color="inherit"
@@ -208,9 +222,13 @@ export default function SettingsPage() {
         <motion.div {...cardProps} transition={{ delay: 0.3 }}>
           <Card sx={{ border: "1px solid", borderColor: "error.main" }}>
             <CardContent sx={{ p: 3 }}>
-              <Stack direction="row" alignItems="center" spacing={1} mb={2}>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ alignItems: "center", mb: 2 }}
+              >
                 <Security sx={{ color: "error.main" }} />
-                <Typography variant="h6" fontWeight={600} color="error">
+                <Typography variant="h6" color="error" sx={{ fontWeight: 600 }}>
                   Security
                 </Typography>
               </Stack>

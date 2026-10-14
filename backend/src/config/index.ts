@@ -36,9 +36,11 @@ export const config = {
     from: process.env.SMTP_FROM || "noreply@interviewai.com",
   },
 
-  openai: {
-    apiKey: process.env.OPENAI_API_KEY || "",
-    model: process.env.OPENAI_MODEL || "gpt-4",
+  ai: {
+    apiKey: process.env.API_KEY || "",
+    model: process.env.MODEL || "minimaxai/minimax-m2.7",
+    endpoint:
+      process.env.OPENAPI_ENDPOINT || "https://integrate.api.nvidia.com/v1",
   },
 
   aws: {
@@ -55,6 +57,6 @@ export const config = {
 
   rateLimit: {
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100,
+    max: process.env.NODE_ENV === "production" ? 100 : 1000,
   },
 } as const;

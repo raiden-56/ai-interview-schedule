@@ -1,18 +1,49 @@
 import { io, Socket } from "socket.io-client";
+import { store } from "../redux/store";
+import { refreshAccessToken } from "../services/api";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
+
+export interface JoinRoomResult {
+  ok: boolean;
+  error?: string;
+  isStaff?: boolean;
+  peers?: { socketId: string; userId: string; name: string; role: string }[];
+}
 
 class SocketService {
   private socket: Socket | null = null;
 
   connect(namespace: string = "/interview") {
+    if (this.socket) return this.socket;
+
     this.socket = io(`${SOCKET_URL}${namespace}`, {
       transports: ["websocket", "polling"],
       autoConnect: true,
+      // Read the token on every (re)connect so refreshed tokens are picked up.
+      auth: (cb) => cb({ token: store.getState().auth.accessToken }),
     });
 
     this.socket.on("connect", () => {
       console.log("Socket connected:", this.socket?.id);
+    });
+
+    // Auth failures aren't retried automatically by socket.io: refresh the
+    // access token once and reconnect.
+    let refreshed = false;
+    this.socket.on("connect_error", async (err) => {
+      console.error("Socket connection error:", err.message);
+      if (refreshed || !/token|auth/i.test(err.message)) return;
+      refreshed = true;
+      try {
+        await refreshAccessToken();
+        this.socket?.connect();
+      } catch {
+        // api.ts handles logout when the refresh token is invalid too
+      }
+    });
+    this.socket.on("connect", () => {
+      refreshed = false;
     });
 
     this.socket.on("disconnect", () => {
@@ -22,12 +53,19 @@ class SocketService {
     return this.socket;
   }
 
-  joinRoom(roomId: string, userId: string) {
-    this.socket?.emit("join-room", roomId, userId);
+  joinRoom(roomId: string): Promise<JoinRoomResult> {
+    return new Promise((resolve) => {
+      if (!this.socket) return resolve({ ok: false, error: "Not connected" });
+      this.socket
+        .timeout(10000)
+        .emit("join-room", roomId, (err: Error | null, res: JoinRoomResult) =>
+          resolve(err ? { ok: false, error: "Join timed out" } : res),
+        );
+    });
   }
 
-  leaveRoom(roomId: string, userId: string) {
-    this.socket?.emit("leave-room", roomId, userId);
+  leaveRoom(roomId: string) {
+    this.socket?.emit("leave-room", roomId);
   }
 
   // Code collaboration
@@ -35,59 +73,22 @@ class SocketService {
     this.socket?.emit("code-change", { roomId, code, language });
   }
 
-  onCodeUpdate(callback: (data: { code: string; language: string }) => void) {
-    this.socket?.on("code-update", callback);
-  }
-
-  // Chat
-  sendMessage(roomId: string, message: string, senderId: string) {
-    this.socket?.emit("chat-message", { roomId, message, senderId });
-  }
-
-  onNewMessage(callback: (data: any) => void) {
-    this.socket?.on("new-message", callback);
+  // Chat — the server echoes the message back to everyone, including sender.
+  sendMessage(roomId: string, message: string) {
+    this.socket?.emit("chat-message", { roomId, message });
   }
 
   // WebRTC Signaling
-  sendOffer(roomId: string, offer: any, to: string) {
+  sendOffer(roomId: string, offer: RTCSessionDescriptionInit, to: string) {
     this.socket?.emit("offer", { roomId, offer, to });
   }
 
-  sendAnswer(roomId: string, answer: any, to: string) {
+  sendAnswer(roomId: string, answer: RTCSessionDescriptionInit, to: string) {
     this.socket?.emit("answer", { roomId, answer, to });
   }
 
-  sendIceCandidate(roomId: string, candidate: any, to: string) {
+  sendIceCandidate(roomId: string, candidate: RTCIceCandidateInit, to: string) {
     this.socket?.emit("ice-candidate", { roomId, candidate, to });
-  }
-
-  onOffer(callback: (data: { offer: any; from: string }) => void) {
-    this.socket?.on("offer", callback);
-  }
-
-  onAnswer(callback: (data: { answer: any; from: string }) => void) {
-    this.socket?.on("answer", callback);
-  }
-
-  onIceCandidate(callback: (data: { candidate: any; from: string }) => void) {
-    this.socket?.on("ice-candidate", callback);
-  }
-
-  // Anti-cheating
-  sendCheatingEvent(roomId: string, eventType: string, details: string) {
-    this.socket?.emit("cheating-event", { roomId, eventType, details });
-  }
-
-  onCheatingDetected(callback: (data: any) => void) {
-    this.socket?.on("cheating-detected", callback);
-  }
-
-  onUserJoined(callback: (data: { userId: string; socketId: string }) => void) {
-    this.socket?.on("user-joined", callback);
-  }
-
-  onUserLeft(callback: (data: { userId: string; socketId: string }) => void) {
-    this.socket?.on("user-left", callback);
   }
 
   disconnect() {

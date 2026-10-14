@@ -91,7 +91,10 @@ export default function LandingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <Stack alignItems="center" spacing={4} textAlign="center">
+            <Stack
+              spacing={4}
+              sx={{ alignItems: "center", textAlign: "center" }}
+            >
               <Chip
                 label="🚀 AI-Powered Interview Platform"
                 color="primary"
@@ -99,8 +102,8 @@ export default function LandingPage() {
               />
               <Typography
                 variant="h2"
-                fontWeight={800}
                 sx={{
+                  fontWeight: 800,
                   maxWidth: 800,
                   background: "linear-gradient(135deg, #7C4DFF, #00E5FF)",
                   WebkitBackgroundClip: "text",

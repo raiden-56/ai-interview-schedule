@@ -1,11 +1,23 @@
 import bcryptjs from "bcryptjs";
+import { Prisma, Role } from "@prisma/client";
 import prisma from "../config/database";
 import { AppError } from "../middleware/errorHandler";
 
 export class UserService {
-  static async getAll(page = 1, limit = 10, role?: string) {
+  static async getAll(page = 1, limit = 10, role?: string, search?: string) {
     const skip = (page - 1) * limit;
-    const where = role ? { role: role as any } : {};
+    const where: Prisma.UserWhereInput = {
+      ...(role ? { role: role as Role } : {}),
+      ...(search
+        ? {
+            OR: [
+              { email: { contains: search, mode: "insensitive" } },
+              { firstName: { contains: search, mode: "insensitive" } },
+              { lastName: { contains: search, mode: "insensitive" } },
+            ],
+          }
+        : {}),
+    };
 
     const [users, total] = await Promise.all([
       prisma.user.findMany({

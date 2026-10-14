@@ -85,7 +85,7 @@ export default function RegisterPage() {
         <CardContent sx={{ p: 4 }}>
           <Box sx={{ textAlign: "center", mb: 4 }}>
             <Code sx={{ fontSize: 48, color: "primary.main", mb: 1 }} />
-            <Typography variant="h4" fontWeight={700}>
+            <Typography variant="h4" sx={{ fontWeight: 700 }}>
               Create Account
             </Typography>
             <Typography color="text.secondary" sx={{ mt: 1 }}>
@@ -148,17 +148,19 @@ export default function RegisterPage() {
               {...register("password")}
               error={!!errors.password}
               helperText={errors.password?.message}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
               }}
               sx={{ mb: 2.5 }}
             />
@@ -183,9 +185,9 @@ export default function RegisterPage() {
             </Button>
           </form>
 
-          <Typography textAlign="center" color="text.secondary">
+          <Typography color="text.secondary" sx={{ textAlign: "center" }}>
             Already have an account?{" "}
-            <Link component={RouterLink} to="/login" fontWeight={600}>
+            <Link component={RouterLink} to="/login" sx={{ fontWeight: 600 }}>
               Sign In
             </Link>
           </Typography>
